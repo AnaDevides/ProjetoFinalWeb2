@@ -1,0 +1,28 @@
+<?php
+class Comentario {
+    private $conn;
+    private $table = "comentarios";
+
+    public function __construct($db) {
+        $this->conn = $db;
+    }
+
+    public function inserir($item_id, $tipo_item, $comentario) {
+        $query = "INSERT INTO " . $this->table . " (item_id, tipo_item, comentario) VALUES (:item_id, :tipo_item, :comentario)";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(":item_id", $item_id);
+        $stmt->bindParam(":tipo_item", $tipo_item);
+        $stmt->bindParam(":comentario", $comentario);
+        return $stmt->execute();
+    }
+
+    public function listar($item_id, $tipo_item) {
+        $query = "SELECT * FROM " . $this->table . " WHERE item_id = :item_id AND tipo_item = :tipo_item ORDER BY data_comentario DESC";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(":item_id", $item_id);
+        $stmt->bindParam(":tipo_item", $tipo_item);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+}
+?>

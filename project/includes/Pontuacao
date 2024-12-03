@@ -1,0 +1,40 @@
+<?php
+class Pontuacao {
+    private $conn;
+
+    public function __construct($db) {
+        $this->conn = $db;
+    }
+
+    // Método para adicionar uma pontuação
+    public function adicionar($id, $tipo, $pontuacao) {
+        $query = "INSERT INTO pontuacoes (item_id, tipo_item, pontuacao) VALUES (:id, :tipo, :pontuacao)";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':id', $id);
+        $stmt->bindParam(':tipo', $tipo);
+        $stmt->bindParam(':pontuacao', $pontuacao);
+        return $stmt->execute();
+    }
+
+    // Método para listar a soma das pontuações e a quantidade de pontuações
+    public function listar($id, $tipo) {
+        $query = "SELECT SUM(pontuacao) AS soma_pontuacao, COUNT(*) AS quantidade FROM pontuacoes WHERE item_id = :id AND tipo_item = :tipo";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':id', $id);
+        $stmt->bindParam(':tipo', $tipo);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    // Método para contar o número de pontuações de um item
+    public function contarPontuacoes($id, $tipo) {
+        $query = "SELECT COUNT(*) AS quantidade FROM pontuacoes WHERE item_id = :id AND tipo_item = :tipo";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':id', $id);
+        $stmt->bindParam(':tipo', $tipo);
+        $stmt->execute();
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $result['quantidade'];
+    }
+}
+?>
